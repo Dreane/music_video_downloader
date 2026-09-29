@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import re
 import tempfile
+from dataclasses import dataclass
 from pathlib import Path
 
 import aiohttp
@@ -14,14 +15,39 @@ TIKTOK_URL_RE = re.compile(
     r"https?://(?:(?:www|vm|vt|m)\.)?tiktok\.com/[^\s]+",
     re.IGNORECASE,
 )
+TIKTOK_ID_RE = re.compile(r"/video/(\d+)")
 
 DOWNLOAD_DIR = Path(__file__).resolve().parent / "downloads"
 DOWNLOAD_DIR.mkdir(exist_ok=True)
 
 
+@dataclass(frozen=True)
+class DownloadResult:
+    path: Path
+    title: str | None
+    video_id: str | None
+    author: str | None
+    source: str
+
+
 def extract_tiktok_url(text: str) -> str | None:
     match = TIKTOK_URL_RE.search(text or "")
     return match.group(0).rstrip(").,]}>\"'") if match else None
+
+
+def extract_video_id(url: str) -> str | None:
+    match = TIKTOK_ID_RE.search(url or "")
+    return match.group(1) if match else None
+
+
+def _author_from_tikwm(data: dict) -> str | None:
+    author = data.get("author")
+    if isinstance(author, dict):
+        name = author.get("unique_id") or author.get("nickname")
+        return str(name) if name else None
+    if isinstance(author, str) and author:
+        return author
+    return None
 
 
 def _ydl_opts(outtmpl: str) -> dict:
@@ -45,10 +71,10 @@ def _ydl_opts(outtmpl: str) -> dict:
     }
 
 
-async def download_with_ytdlp(url: str) -> tuple[Path, str | None]:
-    """Скачивает через yt-dlp. Возвращает (путь, заголовок)."""
+async def download_with_ytdlp(url: str) -> DownloadResult:
+    """Скачивает через yt-dlp."""
 
-    def _run() -> tuple[Path, str | None]:
+    def _run() -> DownloadResult:
         with tempfile.TemporaryDirectory(dir=DOWNLOAD_DIR) as tmp:
             outtmpl = str(Path(tmp) / "%(id)s.%(ext)s")
             with yt_dlp.YoutubeDL(_ydl_opts(outtmpl)) as ydl:
@@ -71,13 +97,20 @@ async def download_with_ytdlp(url: str) -> tuple[Path, str | None]:
 
                 dest = DOWNLOAD_DIR / src.name
                 dest.write_bytes(src.read_bytes())
-                title = info.get("title") or info.get("description")
-                return dest, title
+                raw_id = info.get("id")
+                author = info.get("uploader") or info.get("creator") or info.get("channel")
+                return DownloadResult(
+                    path=dest,
+                    title=info.get("title") or info.get("description"),
+                    video_id=str(raw_id) if raw_id else None,
+                    author=str(author) if author else None,
+                    source="ytdlp",
+                )
 
     return await asyncio.to_thread(_run)
 
 
-async def download_with_tikwm(url: str) -> tuple[Path, str | None]:
+async def download_with_tikwm(url: str) -> DownloadResult:
     """Запасной способ: публичный API tikwm.com (без водяного знака)."""
     api = "https://www.tikwm.com/api/"
     params = {"url": url, "hd": 1}
@@ -96,19 +129,25 @@ async def download_with_tikwm(url: str) -> tuple[Path, str | None]:
         if not video_url:
             raise RuntimeError("TikWM не вернул ссылку на видео")
 
-        title = data.get("title")
-        video_id = data.get("id") or "tiktok"
-        dest = DOWNLOAD_DIR / f"{video_id}.mp4"
+        raw_id = data.get("id")
+        video_id = str(raw_id) if raw_id else None
+        dest = DOWNLOAD_DIR / f"{video_id or 'tiktok'}.mp4"
 
         async with session.get(video_url, timeout=aiohttp.ClientTimeout(total=120)) as video_resp:
             if video_resp.status != 200:
                 raise RuntimeError(f"Не удалось скачать видео: HTTP {video_resp.status}")
             dest.write_bytes(await video_resp.read())
 
-        return dest, title
+        return DownloadResult(
+            path=dest,
+            title=data.get("title"),
+            video_id=video_id,
+            author=_author_from_tikwm(data),
+            source="tikwm",
+        )
 
 
-async def download_tiktok(url: str) -> tuple[Path, str | None]:
+async def download_tiktok(url: str) -> DownloadResult:
     """Пробует yt-dlp, при ошибке — TikWM."""
     errors: list[str] = []
 

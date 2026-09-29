@@ -2,6 +2,10 @@
 __pycache__/
 *.pyc
 downloads/
+bot.db
+*.db-journal
+*.db-wal
+*.db-shm
 .venv/
 venv/
 *.mp4
