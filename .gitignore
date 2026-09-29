@@ -8,6 +8,8 @@ bot.db
 *.db-shm
 .venv/
 venv/
+logs/
+run/
 *.mp4
 *.webm
 *.mp3
