@@ -18,7 +18,7 @@ StartLimitBurst=10
 [Service]
 Type=simple
 WorkingDirectory=$ROOT
-ExecStart=$ROOT/.venv/bin/python $ROOT/bot.py
+ExecStart=$ROOT/venv/bin/python $ROOT/bot.py
 Restart=always
 RestartSec=5
 TimeoutStopSec=20
