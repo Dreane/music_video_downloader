@@ -1609,3 +1609,186 @@ ERROR: [TikTok] 7682446028984864032: Your IP address is blocked from accessing t
 2026-09-29 17:37:39,949 [WARNING] aiogram.dispatcher: Sleep for 4.954495 seconds and try again... (tryings = 10, bot id = 8707195513)
 2026-09-29 17:37:50,061 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
 2026-09-29 17:37:50,061 [WARNING] aiogram.dispatcher: Sleep for 5.031281 seconds and try again... (tryings = 11, bot id = 8707195513)
+2026-09-29 17:38:00,037 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:38:00,037 [WARNING] aiogram.dispatcher: Sleep for 4.994507 seconds and try again... (tryings = 12, bot id = 8707195513)
+2026-09-29 17:38:10,031 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:38:10,031 [WARNING] aiogram.dispatcher: Sleep for 5.200437 seconds and try again... (tryings = 13, bot id = 8707195513)
+2026-09-29 17:38:20,219 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:38:20,219 [WARNING] aiogram.dispatcher: Sleep for 4.970197 seconds and try again... (tryings = 14, bot id = 8707195513)
+2026-09-29 17:38:30,385 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:38:30,385 [WARNING] aiogram.dispatcher: Sleep for 4.906927 seconds and try again... (tryings = 15, bot id = 8707195513)
+2026-09-29 17:38:40,630 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:38:40,630 [WARNING] aiogram.dispatcher: Sleep for 4.952869 seconds and try again... (tryings = 16, bot id = 8707195513)
+2026-09-29 17:38:50,676 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:38:50,676 [WARNING] aiogram.dispatcher: Sleep for 4.805509 seconds and try again... (tryings = 17, bot id = 8707195513)
+2026-09-29 17:38:58,087 [INFO] aiogram.dispatcher: Connection established (tryings = 18, bot id = 8707195513)
+2026-09-29 17:38:58,400 [INFO] aiogram.event: Update id=983810870 is handled. Duration 310 ms by bot id=8707195513
+2026-09-29 17:39:00,624 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:39:00,624 [WARNING] aiogram.dispatcher: Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8707195513)
+2026-09-29 17:39:09,560 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:39:09,560 [WARNING] aiogram.dispatcher: Sleep for 1.351912 seconds and try again... (tryings = 1, bot id = 8707195513)
+2026-09-29 17:39:19,191 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:39:19,191 [WARNING] aiogram.dispatcher: Sleep for 1.551609 seconds and try again... (tryings = 2, bot id = 8707195513)
+2026-09-29 17:39:28,864 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:39:28,864 [WARNING] aiogram.dispatcher: Sleep for 1.932437 seconds and try again... (tryings = 3, bot id = 8707195513)
+2026-09-29 17:39:38,912 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:39:38,912 [WARNING] aiogram.dispatcher: Sleep for 2.502487 seconds and try again... (tryings = 4, bot id = 8707195513)
+2026-09-29 17:39:49,564 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:39:49,564 [WARNING] aiogram.dispatcher: Sleep for 3.127247 seconds and try again... (tryings = 5, bot id = 8707195513)
+2026-09-29 17:39:57,834 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:39:57,834 [WARNING] aiogram.dispatcher: Sleep for 3.964560 seconds and try again... (tryings = 6, bot id = 8707195513)
+2026-09-29 17:40:05,938 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:40:05,938 [WARNING] aiogram.dispatcher: Sleep for 4.963321 seconds and try again... (tryings = 7, bot id = 8707195513)
+2026-09-29 17:40:15,309 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:40:15,309 [WARNING] aiogram.dispatcher: Sleep for 4.978144 seconds and try again... (tryings = 8, bot id = 8707195513)
+2026-09-29 17:40:25,228 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:40:25,228 [WARNING] aiogram.dispatcher: Sleep for 5.027766 seconds and try again... (tryings = 9, bot id = 8707195513)
+2026-09-29 17:40:35,624 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:40:35,624 [WARNING] aiogram.dispatcher: Sleep for 5.112289 seconds and try again... (tryings = 10, bot id = 8707195513)
+2026-09-29 17:40:43,808 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:40:43,808 [WARNING] aiogram.dispatcher: Sleep for 5.146764 seconds and try again... (tryings = 11, bot id = 8707195513)
+2026-09-29 17:40:53,175 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:40:53,175 [WARNING] aiogram.dispatcher: Sleep for 4.995609 seconds and try again... (tryings = 12, bot id = 8707195513)
+2026-09-29 17:41:03,233 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:41:03,233 [WARNING] aiogram.dispatcher: Sleep for 5.140493 seconds and try again... (tryings = 13, bot id = 8707195513)
+2026-09-29 17:41:13,539 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:41:13,539 [WARNING] aiogram.dispatcher: Sleep for 5.031218 seconds and try again... (tryings = 14, bot id = 8707195513)
+2026-09-29 17:41:23,692 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:41:23,693 [WARNING] aiogram.dispatcher: Sleep for 4.866435 seconds and try again... (tryings = 15, bot id = 8707195513)
+2026-09-29 17:41:33,665 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:41:33,665 [WARNING] aiogram.dispatcher: Sleep for 4.929982 seconds and try again... (tryings = 16, bot id = 8707195513)
+2026-09-29 17:41:43,768 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:41:43,768 [WARNING] aiogram.dispatcher: Sleep for 4.968702 seconds and try again... (tryings = 17, bot id = 8707195513)
+2026-09-29 17:41:53,787 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 17:41:53,787 [WARNING] aiogram.dispatcher: Sleep for 5.108209 seconds and try again... (tryings = 18, bot id = 8707195513)
+2026-09-29 17:42:00,786 [INFO] aiogram.dispatcher: Connection established (tryings = 19, bot id = 8707195513)
+2026-09-29 17:42:01,268 [INFO] aiogram.event: Update id=983810872 is handled. Duration 479 ms by bot id=8707195513
+2026-09-29 18:43:24,270 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-09-29 18:43:24,271 [WARNING] aiogram.dispatcher: Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8707195513)
+2026-09-29 18:43:35,439 [INFO] aiogram.dispatcher: Connection established (tryings = 1, bot id = 8707195513)
+2026-09-29 20:45:08,270 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-09-29 20:45:08,271 [WARNING] aiogram.dispatcher: Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8707195513)
+2026-09-29 20:46:20,271 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2026-09-29 20:46:20,271 [WARNING] aiogram.dispatcher: Sleep for 1.331221 seconds and try again... (tryings = 1, bot id = 8707195513)
+2026-09-29 20:46:32,180 [INFO] aiogram.dispatcher: Connection established (tryings = 2, bot id = 8707195513)
+2026-09-29 21:36:34,425 [INFO] aiogram.event: Update id=983810874 is handled. Duration 458 ms by bot id=8707195513
+2026-09-29 21:36:38,198 [INFO] aiogram.event: Update id=983810875 is handled. Duration 88 ms by bot id=8707195513
+2026-09-29 21:36:50,203 [INFO] aiogram.event: Update id=983810873 is not handled. Duration 60939 ms by bot id=8707195513
+2026-09-29 21:36:50,203 [ERROR] aiogram.event: Cause exception while process update id=983810873 by bot id=8707195513
+TelegramNetworkError: HTTP Client says - Request timeout error
+Traceback (most recent call last):
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiohttp/client.py", line 858, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiohttp/client.py", line 812, in _connect_and_send_request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiohttp/connector.py", line 657, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiohttp/connector.py", line 1242, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiohttp/connector.py", line 1589, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiohttp/connector.py", line 1301, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiohappyeyeballs/impl.py", line 89, in start_connection
+    sock, _, _ = await _staggered.staggered_race(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiohappyeyeballs/_staggered.py", line 155, in staggered_race
+    done = await _wait_one(
+           ^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiohappyeyeballs/_staggered.py", line 36, in _wait_one
+    return await wait_next
+           ^^^^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/client/session/aiohttp.py", line 167, in make_request
+    async with session.post(
+               ^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiohttp/client.py", line 1693, in __aenter__
+    self._resp: _RetType_co = await self._coro
+                              ^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiohttp/client.py", line 701, in _request
+    with timer:
+         ^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiohttp/helpers.py", line 759, in __exit__
+    raise asyncio.TimeoutError from exc_val
+TimeoutError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 321, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 164, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/dispatcher/middlewares/error.py", line 27, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 58, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/fsm/middleware.py", line 43, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/dispatcher/dispatcher.py", line 284, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/dispatcher/router.py", line 172, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/dispatcher/router.py", line 164, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/dispatcher/router.py", line 192, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/dispatcher/event/telegram.py", line 126, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/dispatcher/event/handler.py", line 71, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/bot.py", line 34, in cmd_start
+    await message.answer(
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/methods/base.py", line 82, in emit
+    return await bot(self)
+           ^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/client/bot.py", line 515, in __call__
+    return await self.session(self, method, timeout=request_timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/client/session/base.py", line 259, in __call__
+    return cast(TelegramType, await middleware(bot, method))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/www/u3115271/data/video_downloader/venv/lib64/python3.12/site-packages/aiogram/client/session/aiohttp.py", line 174, in make_request
+    raise TelegramNetworkError(method=method, message="Request timeout error") from e
+aiogram.exceptions.TelegramNetworkError: HTTP Client says - Request timeout error
+2026-09-29 21:37:55,180 [INFO] aiogram.event: Update id=983810876 is handled. Duration 93 ms by bot id=8707195513
+2026-09-29 22:32:17,803 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 22:32:17,803 [WARNING] aiogram.dispatcher: Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 8707195513)
+2026-09-29 22:32:22,945 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 22:32:22,945 [WARNING] aiogram.dispatcher: Sleep for 1.304668 seconds and try again... (tryings = 1, bot id = 8707195513)
+2026-09-29 22:32:28,562 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 22:32:28,562 [WARNING] aiogram.dispatcher: Sleep for 1.707508 seconds and try again... (tryings = 2, bot id = 8707195513)
+2026-09-29 22:32:34,771 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 22:32:34,771 [WARNING] aiogram.dispatcher: Sleep for 2.169203 seconds and try again... (tryings = 3, bot id = 8707195513)
+2026-09-29 22:32:41,789 [ERROR] aiogram.dispatcher: Failed to fetch updates - TelegramConflictError: Telegram server says - Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2026-09-29 22:32:41,789 [WARNING] aiogram.dispatcher: Sleep for 2.916206 seconds and try again... (tryings = 4, bot id = 8707195513)
+2026-09-29 22:32:47,187 [WARNING] aiogram.dispatcher: Received SIGTERM signal
+2026-09-29 22:32:47,190 [INFO] aiogram.dispatcher: Polling stopped for bot @videotoyou_bot id=8707195513 - 'Скачать видео по ссылке | TikTok'
+2026-09-29 22:32:47,190 [INFO] aiogram.dispatcher: Polling stopped
