@@ -1,4 +1,4 @@
-"""Telegram-бот: скачивание TikTok без водяного знака."""
+"""Telegram-бот: скачивание TikTok и YouTube Shorts."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from aiogram.types import FSInputFile, Message
 from dotenv import load_dotenv
 
 from db import add_download, get_cached_video, init_db, is_banned, save_video, upsert_user
-from downloader import DOWNLOAD_DIR, download_tiktok, extract_tiktok_url, extract_video_id
+from downloader import DOWNLOAD_DIR, download_media, extract_link, youtube_setup_error
 
 load_dotenv()
 
@@ -30,8 +30,8 @@ MAX_SEND_BYTES = 49 * 1024 * 1024
 dp = Dispatcher()
 
 
-def _caption(title: str | None) -> str:
-    caption = (title or "TikTok").strip()
+def _caption(title: str | None, fallback: str = "Видео") -> str:
+    caption = (title or fallback).strip()
     if len(caption) > 900:
         caption = caption[:897] + "…"
     return caption
@@ -93,16 +93,18 @@ async def handle_link(message: Message) -> None:
         await message.answer("Доступ закрыт.")
         return
 
-    url = extract_tiktok_url(message.text or "")
-    if not url:
+    link = extract_link(message.text or "")
+    if link is None:
         await message.answer("Не вижу ссылку на TikTok. Пришли URL ролика.")
         return
 
-    cached = await get_cached_video(url, extract_video_id(url))
+    url = link.url
+    fallback = "YouTube" if link.platform == "youtube" else "TikTok"
+    cached = await get_cached_video(url, link.video_id)
     if cached is not None:
         await message.answer_video(
             video=cached.file_id,
-            caption=_caption(cached.title),
+            caption=_caption(cached.title, fallback),
             supports_streaming=True,
         )
         await _record_download(
@@ -126,7 +128,7 @@ async def handle_link(message: Message) -> None:
     error: str | None = None
 
     try:
-        result = await download_tiktok(url)
+        result = await download_media(link)
         file_path = result.path
         size = file_path.stat().st_size
 
@@ -139,7 +141,7 @@ async def handle_link(message: Message) -> None:
         else:
             sent = await message.answer_video(
                 video=FSInputFile(file_path),
-                caption=_caption(result.title),
+                caption=_caption(result.title, fallback),
                 supports_streaming=True,
             )
             await status.delete()
@@ -172,7 +174,7 @@ async def handle_link(message: Message) -> None:
     await _record_download(
         user_id=user_id,
         url=url,
-        video_id=result.video_id if result else extract_video_id(url),
+        video_id=result.video_id if result else link.video_id,
         title=result.title if result else None,
         author=result.author if result else None,
         source=result.source if result else None,
@@ -190,6 +192,9 @@ async def main() -> None:
 
     DOWNLOAD_DIR.mkdir(exist_ok=True)
     init_db()
+    youtube_error = youtube_setup_error()
+    if youtube_error:
+        logger.warning("YouTube Shorts недоступны: %s", youtube_error)
     bot = Bot(token=BOT_TOKEN)
     logger.info("Бот запущен")
     await dp.start_polling(bot)

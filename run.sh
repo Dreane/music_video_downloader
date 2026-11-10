@@ -16,7 +16,7 @@ install_unit() {
   mkdir -p "$UNIT_DIR"
   cat > "$UNIT_DIR/$UNIT_NAME" << EOF
 [Unit]
-Description=Telegram-бот скачивания TikTok
+Description=Telegram-бот скачивания TikTok и YouTube Shorts
 After=network.target
 StartLimitIntervalSec=60
 StartLimitBurst=10
