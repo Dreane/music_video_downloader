@@ -37,6 +37,21 @@ def _caption(title: str | None, fallback: str = "Видео") -> str:
     return caption
 
 
+def _clip(value: str | None, limit: int = 64) -> str | None:
+    text = (value or "").strip()
+    if not text:
+        return None
+    return text[:limit]
+
+
+def _platform_name(platform: str) -> str:
+    return {
+        "youtube": "YouTube",
+        "yandex": "Яндекс Музыка",
+        "vk": "ВК",
+    }.get(platform, "TikTok")
+
+
 async def _record_download(
     user_id: int,
     url: str,
@@ -76,11 +91,15 @@ async def _touch_user(message: Message) -> int | None:
 async def cmd_start(message: Message) -> None:
     await _touch_user(message)
     await message.answer(
-        "Пришли ссылку на TikTok — верну видео без водяного знака.\n\n"
-        "Поддерживаются ссылки:\n"
+        "Пришли ссылку — верну файл.\n\n"
+        "TikTok, видео без водяного знака:\n"
         "• tiktok.com/@user/video/...\n"
         "• vm.tiktok.com/...\n"
-        "• vt.tiktok.com/..."
+        "• vt.tiktok.com/...\n\n"
+        "Яндекс Музыка:\n"
+        "• music.yandex.ru/album/…/track/…\n\n"
+        "ВКонтакте:\n"
+        "• vk.com/audio…"
     )
 
 
@@ -95,18 +114,28 @@ async def handle_link(message: Message) -> None:
 
     link = extract_link(message.text or "")
     if link is None:
-        await message.answer("Не вижу ссылку на TikTok. Пришли URL ролика.")
+        await message.answer(
+            "Не вижу ссылку. Пришли URL TikTok, Яндекс Музыки или ВК."
+        )
         return
 
     url = link.url
-    fallback = "YouTube" if link.platform == "youtube" else "TikTok"
+    fallback = _platform_name(link.platform)
     cached = await get_cached_video(url, link.video_id)
     if cached is not None:
-        await message.answer_video(
-            video=cached.file_id,
-            caption=_caption(cached.title, fallback),
-            supports_streaming=True,
-        )
+        if cached.kind == "audio":
+            await message.answer_audio(
+                audio=cached.file_id,
+                caption=_caption(cached.title, fallback),
+                title=_clip(cached.title),
+                performer=_clip(cached.author),
+            )
+        else:
+            await message.answer_video(
+                video=cached.file_id,
+                caption=_caption(cached.title, fallback),
+                supports_streaming=True,
+            )
         await _record_download(
             user_id=user_id,
             url=url,
@@ -135,9 +164,20 @@ async def handle_link(message: Message) -> None:
         if size > MAX_SEND_BYTES:
             download_status = "too_large"
             await status.edit_text(
-                f"Видео слишком большое для Telegram ({size / 1024 / 1024:.1f} МБ). "
+                f"Файл слишком большой для Telegram ({size / 1024 / 1024:.1f} МБ). "
                 "Лимит бота — около 50 МБ."
             )
+        elif result.kind == "audio":
+            sent = await message.answer_audio(
+                audio=FSInputFile(file_path),
+                caption=_caption(result.title, fallback),
+                title=_clip(result.title),
+                performer=_clip(result.author),
+                **({"duration": result.duration} if result.duration else {}),
+            )
+            await status.delete()
+            file_id = sent.audio.file_id if sent.audio else None
+            download_status = "ok"
         else:
             sent = await message.answer_video(
                 video=FSInputFile(file_path),
@@ -167,6 +207,7 @@ async def handle_link(message: Message) -> None:
                 file_id=file_id,
                 file_size=size,
                 url=url,
+                kind=result.kind,
             )
         except Exception:
             logger.exception("Не удалось сохранить видео в кэш")

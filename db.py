@@ -18,6 +18,7 @@ class CachedVideo:
     author: str | None
     file_id: str
     file_size: int | None
+    kind: str = "video"
 
 
 def _connect() -> sqlite3.Connection:
@@ -51,6 +52,7 @@ def init_db() -> None:
                 author TEXT,
                 file_id TEXT,
                 file_size INTEGER,
+                kind TEXT NOT NULL DEFAULT 'video',
                 created_at TEXT NOT NULL
             );
 
@@ -82,6 +84,11 @@ def init_db() -> None:
                 ON urls(video_id);
             """
         )
+        columns = {row["name"] for row in conn.execute("PRAGMA table_info(videos)")}
+        if "kind" not in columns:
+            conn.execute(
+                "ALTER TABLE videos ADD COLUMN kind TEXT NOT NULL DEFAULT 'video'"
+            )
 
 
 def _upsert_user(telegram_id: int, username: str | None, first_name: str | None) -> None:
@@ -112,12 +119,14 @@ def _is_banned(telegram_id: int) -> bool:
 def _cached_from_row(row: sqlite3.Row | None) -> CachedVideo | None:
     if row is None or not row["file_id"]:
         return None
+    kind = row["kind"] if "kind" in row.keys() and row["kind"] else "video"
     return CachedVideo(
         video_id=row["video_id"],
         title=row["title"],
         author=row["author"],
         file_id=row["file_id"],
         file_size=row["file_size"],
+        kind=kind,
     )
 
 
@@ -125,7 +134,7 @@ def _get_cached_video(url: str, video_id: str | None) -> CachedVideo | None:
     with _connect() as conn:
         row = conn.execute(
             """
-            SELECT v.video_id, v.title, v.author, v.file_id, v.file_size
+            SELECT v.video_id, v.title, v.author, v.file_id, v.file_size, v.kind
             FROM videos v
             JOIN urls u ON u.video_id = v.video_id
             WHERE u.url = ? AND v.file_id IS NOT NULL
@@ -135,7 +144,7 @@ def _get_cached_video(url: str, video_id: str | None) -> CachedVideo | None:
         if row is None and video_id:
             row = conn.execute(
                 """
-                SELECT video_id, title, author, file_id, file_size
+                SELECT video_id, title, author, file_id, file_size, kind
                 FROM videos
                 WHERE video_id = ? AND file_id IS NOT NULL
                 """,
@@ -151,20 +160,22 @@ def _save_video(
     file_id: str | None,
     file_size: int | None,
     url: str,
+    kind: str = "video",
 ) -> None:
     now = _now()
     with _connect() as conn:
         conn.execute(
             """
-            INSERT INTO videos (video_id, title, author, file_id, file_size, created_at)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO videos (video_id, title, author, file_id, file_size, kind, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(video_id) DO UPDATE SET
                 title = COALESCE(excluded.title, videos.title),
                 author = COALESCE(excluded.author, videos.author),
                 file_id = COALESCE(excluded.file_id, videos.file_id),
-                file_size = COALESCE(excluded.file_size, videos.file_size)
+                file_size = COALESCE(excluded.file_size, videos.file_size),
+                kind = excluded.kind
             """,
-            (video_id, title, author, file_id, file_size, now),
+            (video_id, title, author, file_id, file_size, kind, now),
         )
         conn.execute(
             """
@@ -230,8 +241,11 @@ async def save_video(
     file_id: str | None,
     file_size: int | None,
     url: str,
+    kind: str = "video",
 ) -> None:
-    await asyncio.to_thread(_save_video, video_id, title, author, file_id, file_size, url)
+    await asyncio.to_thread(
+        _save_video, video_id, title, author, file_id, file_size, url, kind
+    )
 
 
 async def add_download(

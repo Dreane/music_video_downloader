@@ -67,6 +67,9 @@ find_running_pid() {
 
 if running="$(find_running_pid)"; then
   printf '%s\n' "$running" > "$PID_FILE"
+  if [[ -t 1 ]]; then
+    echo "Бот уже запущен, pid $running"
+  fi
   exit 0
 fi
 

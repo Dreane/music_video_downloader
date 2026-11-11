@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import os
 import re
 import shutil
 import tempfile
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
+from uuid import uuid4
 
 import aiohttp
 import yt_dlp
@@ -27,6 +30,22 @@ YOUTUBE_URL_RE = re.compile(
     re.IGNORECASE,
 )
 YOUTUBE_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
+YANDEX_URL_RE = re.compile(
+    r"https?://music\.yandex\.(?:ru|kz|ua|by|com)/[^\s]+",
+    re.IGNORECASE,
+)
+YANDEX_TRACK_RE = re.compile(r"/track/(\d+)")
+VK_URL_RE = re.compile(
+    r"https?://(?:(?:m|new)\.)?vk\.(?:com|ru)/(?:audio|music)[^\s]*",
+    re.IGNORECASE,
+)
+VK_TRACK_RE = re.compile(r"(?:^|[^\w])audio(-?\d+_\d+)|/track/(-?\d+_\d+)", re.IGNORECASE)
+_YANDEX_SIGN_PREFIX = "XGRlBW9FXlekgbPrRHuSiA"
+_BROWSER_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/122.0.0.0 Safari/537.36"
+)
 # Официальный потолок YouTube Shorts.
 SHORTS_MAX_SECONDS = 180
 _TRAILING_URL_JUNK = ").,]}>\"'"
@@ -42,6 +61,8 @@ class DownloadResult:
     video_id: str | None
     author: str | None
     source: str
+    kind: str = "video"
+    duration: int | None = None
 
 
 @dataclass(frozen=True)
@@ -94,8 +115,20 @@ def extract_youtube_url(text: str) -> str | None:
     return url if extract_youtube_id(url) else None
 
 
+def _yandex_track_id(url: str) -> str | None:
+    match = YANDEX_TRACK_RE.search(url or "")
+    return match.group(1) if match else None
+
+
+def _vk_audio_id(url: str) -> str | None:
+    match = VK_TRACK_RE.search(url or "")
+    if not match:
+        return None
+    return match.group(1) or match.group(2)
+
+
 def extract_link(text: str) -> IncomingLink | None:
-    """Берёт первую ссылку TikTok или YouTube в сообщении."""
+    """Берёт первую ссылку TikTok, YouTube, Яндекс Музыки или ВК."""
     found: list[tuple[int, IncomingLink]] = []
 
     tiktok = TIKTOK_URL_RE.search(text or "")
@@ -115,6 +148,32 @@ def extract_link(text: str) -> IncomingLink | None:
                 youtube.start(),
                 IncomingLink(url=url, video_id=video_id, platform="youtube"),
             ))
+
+    yandex = YANDEX_URL_RE.search(text or "")
+    if yandex:
+        url = _clean_url(yandex.group(0))
+        track_id = _yandex_track_id(url)
+        found.append((
+            yandex.start(),
+            IncomingLink(
+                url=url,
+                video_id=f"ym:{track_id}" if track_id else None,
+                platform="yandex",
+            ),
+        ))
+
+    vk = VK_URL_RE.search(text or "")
+    if vk:
+        url = _clean_url(vk.group(0))
+        audio_id = _vk_audio_id(url)
+        found.append((
+            vk.start(),
+            IncomingLink(
+                url=url,
+                video_id=f"vk:{audio_id}" if audio_id else None,
+                platform="vk",
+            ),
+        ))
 
     if not found:
         return None
@@ -412,7 +471,223 @@ async def download_youtube(url: str) -> DownloadResult:
     return await asyncio.to_thread(_run)
 
 
+def _yandex_file_url(host: str, path: str, ts: str, signature: str, codec: str) -> str:
+    digest = hashlib.md5(
+        f"{_YANDEX_SIGN_PREFIX}{path[1:]}{signature}".encode()
+    ).hexdigest()
+    safe_codec = codec if codec in {"mp3", "aac"} else "mp3"
+    return f"https://{host}/get-{safe_codec}/{digest}/{ts}{path}"
+
+
+def _yandex_url_from_xml(payload: bytes, codec: str) -> str:
+    try:
+        root = ET.fromstring(payload)
+    except ET.ParseError as exc:
+        raise RuntimeError("Яндекс Музыка вернула не адрес файла") from exc
+    host = (root.findtext("host") or "").strip()
+    path = (root.findtext("path") or "").strip()
+    ts = (root.findtext("ts") or "").strip()
+    signature = (root.findtext("s") or "").strip()
+    if not all((host, path, ts, signature)):
+        raise RuntimeError("Яндекс Музыка не вернула адрес файла")
+    return _yandex_file_url(host, path, ts, signature, codec)
+
+
+def _pick_yandex_variant(items: list[dict], *, has_token: bool) -> dict:
+    full = [item for item in items if not item.get("preview") and item.get("downloadInfoUrl")]
+    if not full:
+        if has_token:
+            raise RuntimeError("У этого аккаунта Яндекс Музыки нет полного файла трека.")
+        raise RuntimeError(
+            "Для полного трека добавь в .env YANDEX_MUSIC_TOKEN — "
+            "токен своего аккаунта Яндекс Музыки."
+        )
+
+    def rank(item: dict) -> tuple[bool, int]:
+        bitrate = item.get("bitrateInKbps") or 0
+        return (item.get("codec") == "mp3", int(bitrate))
+
+    return max(full, key=rank)
+
+
+async def _download_to(session: aiohttp.ClientSession, url: str, dest: Path, headers: dict | None = None) -> None:
+    try:
+        async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=120)) as resp:
+            if resp.status != 200:
+                raise RuntimeError(f"Не удалось скачать файл: HTTP {resp.status}")
+            with dest.open("wb") as handle:
+                async for chunk in resp.content.iter_chunked(65536):
+                    if chunk:
+                        handle.write(chunk)
+    except RuntimeError:
+        dest.unlink(missing_ok=True)
+        raise
+    except Exception as exc:
+        dest.unlink(missing_ok=True)
+        raise RuntimeError("Не удалось скачать файл") from exc
+
+    if not dest.is_file() or dest.stat().st_size < 1024:
+        dest.unlink(missing_ok=True)
+        raise RuntimeError("Сервис вернул пустой файл")
+    head = dest.read_bytes()[:32].lstrip()
+    if head.startswith(b"<"):
+        dest.unlink(missing_ok=True)
+        raise RuntimeError("Сервис вернул страницу вместо аудио")
+
+
+async def download_yandex(link: IncomingLink) -> DownloadResult:
+    """Скачивает один трек Яндекс Музыки."""
+    track_id = _yandex_track_id(link.url)
+    if not track_id:
+        raise RuntimeError(
+            "Пришли ссылку на трек: music.yandex.ru/album/…/track/…"
+        )
+
+    token = os.getenv("YANDEX_MUSIC_TOKEN", "").strip()
+    headers = {"User-Agent": _BROWSER_UA, "Accept": "application/json"}
+    if token:
+        headers["Authorization"] = f"OAuth {token}"
+
+    async with aiohttp.ClientSession(headers=headers) as session:
+        try:
+            async with session.get(
+                f"https://api.music.yandex.net/tracks/{track_id}",
+                timeout=aiohttp.ClientTimeout(total=30),
+            ) as resp:
+                if resp.status != 200:
+                    raise RuntimeError(f"Яндекс Музыка ответила HTTP {resp.status}")
+                meta_payload = await resp.json(content_type=None)
+            async with session.get(
+                f"https://api.music.yandex.net/tracks/{track_id}/download-info",
+                timeout=aiohttp.ClientTimeout(total=30),
+            ) as resp:
+                if resp.status != 200:
+                    raise RuntimeError(f"Яндекс Музыка ответила HTTP {resp.status}")
+                download_payload = await resp.json(content_type=None)
+        except RuntimeError:
+            raise
+        except Exception as exc:
+            raise RuntimeError("Яндекс Музыка недоступна") from exc
+
+    if isinstance(meta_payload, dict) and meta_payload.get("error"):
+        message = meta_payload["error"].get("message") if isinstance(meta_payload["error"], dict) else meta_payload["error"]
+        raise RuntimeError(f"Яндекс Музыка: {message}")
+    tracks = (meta_payload or {}).get("result") if isinstance(meta_payload, dict) else None
+    if not tracks:
+        raise RuntimeError("Яндекс Музыка не нашла трек")
+    track = tracks[0]
+    artists = [
+        artist.get("name")
+        for artist in track.get("artists") or []
+        if isinstance(artist, dict) and artist.get("name")
+    ]
+    author = ", ".join(artists) or None
+    title = track.get("title") or "Трек"
+    duration_ms = track.get("durationMs")
+    duration = int(duration_ms / 1000) if isinstance(duration_ms, (int, float)) else None
+
+    variants = (download_payload or {}).get("result") if isinstance(download_payload, dict) else None
+    if not isinstance(variants, list):
+        raise RuntimeError("Яндекс Музыка не вернула файл трека")
+    chosen = _pick_yandex_variant(variants, has_token=bool(token))
+    codec = str(chosen.get("codec") or "mp3")
+    info_url = str(chosen["downloadInfoUrl"])
+    ext = "m4a" if codec == "aac" else "mp3"
+    dest = DOWNLOAD_DIR / f"ym_{track_id}_{uuid4().hex[:8]}.{ext}"
+
+    async with aiohttp.ClientSession(headers={"User-Agent": _BROWSER_UA}) as session:
+        if chosen.get("direct"):
+            file_url = info_url
+        else:
+            async with session.get(info_url, timeout=aiohttp.ClientTimeout(total=30)) as resp:
+                if resp.status != 200:
+                    raise RuntimeError(f"Яндекс Музыка ответила HTTP {resp.status}")
+                file_url = _yandex_url_from_xml(await resp.read(), codec)
+        await _download_to(session, file_url, dest)
+
+    return DownloadResult(
+        path=dest,
+        title=f"{author} — {title}" if author else str(title),
+        video_id=f"ym:{track_id}",
+        author=author,
+        source="yandex",
+        kind="audio",
+        duration=duration,
+    )
+
+
+async def download_vk(link: IncomingLink) -> DownloadResult:
+    """Скачивает один трек ВК."""
+    audio_id = _vk_audio_id(link.url)
+    if not audio_id:
+        raise RuntimeError("Пришли ссылку на один трек ВК: vk.com/audio…")
+
+    token = os.getenv("VK_ACCESS_TOKEN", "").strip()
+    if not token:
+        raise RuntimeError(
+            "Для ВК добавь в .env VK_ACCESS_TOKEN — токен пользователя с доступом к аудио."
+        )
+
+    params = {"audios": audio_id, "access_token": token, "v": "5.131"}
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                "https://api.vk.com/method/audio.getById",
+                params=params,
+                timeout=aiohttp.ClientTimeout(total=30),
+            ) as resp:
+                if resp.status != 200:
+                    raise RuntimeError(f"ВК ответил HTTP {resp.status}")
+                payload = await resp.json(content_type=None)
+    except RuntimeError:
+        raise
+    except Exception as exc:
+        raise RuntimeError("ВК недоступен") from exc
+
+    if not isinstance(payload, dict):
+        raise RuntimeError("ВК вернул пустой ответ")
+    if payload.get("error"):
+        message = payload["error"].get("error_msg") if isinstance(payload["error"], dict) else payload["error"]
+        raise RuntimeError(f"ВК: {message}")
+    items = payload.get("response") or []
+    if not items or not isinstance(items, list):
+        raise RuntimeError("ВК не нашёл трек")
+    item = items[0]
+    file_url = item.get("url")
+    if not file_url:
+        raise RuntimeError(
+            "Этот токен ВК не отдаёт файл. Нужен токен пользователя с доступом к аудио."
+        )
+
+    artist = item.get("artist") or None
+    title = item.get("title") or "Трек"
+    duration = item.get("duration")
+    duration = int(duration) if isinstance(duration, (int, float)) else None
+    dest = DOWNLOAD_DIR / f"vk_{audio_id.replace('-', 'm')}_{uuid4().hex[:8]}.mp3"
+    async with aiohttp.ClientSession() as session:
+        await _download_to(
+            session,
+            str(file_url),
+            dest,
+            headers={"User-Agent": _BROWSER_UA, "Referer": "https://vk.com/"},
+        )
+
+    return DownloadResult(
+        path=dest,
+        title=f"{artist} — {title}" if artist else str(title),
+        video_id=f"vk:{audio_id}",
+        author=str(artist) if artist else None,
+        source="vk",
+        kind="audio",
+        duration=duration,
+    )
+
+
 async def download_media(link: IncomingLink) -> DownloadResult:
     if link.platform == "youtube":
         return await download_youtube(link.url)
+    if link.platform == "yandex":
+        return await download_yandex(link)
+    if link.platform == "vk":
+        return await download_vk(link)
     return await download_tiktok(link.url)
